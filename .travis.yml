@@ -1,3 +1,12 @@
-language: scala
+before_install:
+  - mkdir -p $HOME/sbcl
+  - mkdir -p tmp
+  - ( cd tmp &&
+      wget http://prdownloads.sourceforge.net/sbcl/sbcl-1.2.6-x86-64-linux-binary.tar.bz2 &&
+      tar jxf sbcl-1.2.6-x86-64-linux-binary.tar.bz2 &&
+      cd sbcl-1.2.6-x86-64-linux/ &&
+      INSTALL_ROOT=$HOME/sbcl bash install.sh )
+  - export PATH="$PATH:$HOME/sbcl/bin"
+  - export SBCL_HOME="$HOME/sbcl/lib/sbcl/"
 script:
-  - ./bin/test.sh
+  - sbcl --script bin/test.lisp
