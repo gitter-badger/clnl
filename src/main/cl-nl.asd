@@ -5,4 +5,6 @@
   :author "Frank Duncan (frank@kank.com)"
   :serial t
   :components ((:file "package")
-               (:file "main")))
+               (:file "lex")
+               (:file "main"))
+  :depends-on (:cl-ppcre))
