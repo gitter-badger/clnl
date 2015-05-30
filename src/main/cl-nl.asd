@@ -6,5 +6,6 @@
   :serial t
   :components ((:file "package")
                (:file "lex")
+               (:file "random")
                (:file "main"))
   :depends-on (:cl-ppcre))

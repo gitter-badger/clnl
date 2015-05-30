@@ -22,6 +22,7 @@ import org.nlogo.util.Utils.url2String
 val workspace = HeadlessWorkspace.newInstance
 workspace.silent = true
 workspace.openFromSource(url2String(api.ModelReader.emptyModelPath))
+/*
 workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands("resize-world -2 2 -2 2 crt 1", api.AgentKind.Observer))
 mirror.Mirrorables.allMirrorables(workspace.world).map( x => {
   System.out.print("(")
@@ -39,6 +40,15 @@ mirror.Mirrorables.allMirrorables(workspace.world).map( x => {
   })
   System.out.println(")")
   
-  })
+  })*/
+
+workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands("random-seed 15", api.AgentKind.Observer))
+for(_ <- 1 to 40)
+  System.out.println(workspace.runCompiledReporter(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileReporter("random-float 30")))
+
+val m = new org.nlogo.util.MersenneTwisterFast();
+m.setSeed(15);
+for(_ <- 1 to 40)
+  System.out.println(30d * m.nextDouble())
 
 workspace.dispose
