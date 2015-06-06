@@ -1,0 +1,21 @@
+#!/bin/bash -e
+
+if ! [ -n "$1" ] ; then
+  echo "Uhm, need a test name, yo"
+  exit 1
+fi
+TEST=$1
+
+sbcl --eval "(asdf:load-system :cl-nl-test)" --eval "(quit)" &> /dev/null
+COMMANDS=$(sbcl --noinform --disable-ldb --lose-on-corruption --end-runtime-options --eval "(asdf:load-system :cl-nl-test)" --eval "(cl-nl-test::test-commands \"$1\")" --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2)
+
+scalafile=$(mktemp -u -p .)
+clfile=$(mktemp -u -p .)
+
+echo "$COMMANDS" | bin/runcmd.scala | sed -n '/^----$/,$p' | tail -n +2 > $scalafile
+sbcl --noinform --disable-ldb --lose-on-corruption --end-runtime-options --eval "(asdf:load-system :cl-nl-test)" --eval "(cl-nl-test::diagnose-test \"$1\")" --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2 > $clfile
+
+vimdiff $scalafile $clfile
+
+rm $scalafile
+rm $clfile

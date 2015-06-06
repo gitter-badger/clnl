@@ -5,5 +5,6 @@
   :author "Frank Duncan (frank@kank.com)"
   :serial t
   :components ((:file "package")
-               (:file "main"))
-  :depends-on (:cl-nl))
+               (:file "main")
+               (:file "simpletests"))
+  :depends-on (:cl-nl :ironclad))

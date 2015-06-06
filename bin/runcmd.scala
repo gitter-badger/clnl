@@ -30,36 +30,9 @@ workspace.openFromSource(url2String("file:resources/empty.nlogo"))
 
 val commands = io.Source.stdin.getLines.mkString("\n")
 
+workspace.mainRNG.setSeed(15)
 workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands(commands, api.AgentKind.Observer))
-mirror.Mirrorables.allMirrorables(workspace.world).map( x => {
-  System.out.print("(")
-  System.out.print(":" + x.kind)
-  System.out.print(" ")
-  System.out.print(x.agentKey.id)
-  System.out.print(" (")
-  x.kind.Variables.values.toSeq.map( k => {
-    System.out.print("(:" + k + " ")
-    System.out.print(x.getVariable(k.id) match {
-      case s: java.lang.String => "\"s\""
-      case d: java.lang.Double => d + "d0"
-      case b: java.lang.Boolean => if(b)"T" else "NIL"
-      case _: org.nlogo.api.ShapeList => ":SHAPELIST"
-      case v => v
-    })
-    System.out.print(") ")
-  })
-  System.out.println(")")
-  
-  })
 
-/*
-workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands("random-seed 15", api.AgentKind.Observer))
-for(_ <- 1 to 40)
-  System.out.println(workspace.runCompiledReporter(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileReporter("random-float 30")))
-
-val m = new org.nlogo.util.MersenneTwisterFast();
-m.setSeed(15);
-for(_ <- 1 to 40)
-  System.out.println(30d * m.nextDouble())*/
-
+workspace.world.exportWorld(new java.io.PrintWriter(System.out, true), true)
+System.out.println(org.nlogo.headless.Checksummer.calculateChecksum(workspace.world.exportWorld(_, true)))
 workspace.dispose

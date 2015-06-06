@@ -1,7 +1,3 @@
-(defpackage #:cl-nl.lexer
- (:use :common-lisp)
- (:export :lex))
-
 (in-package #:cl-nl.lexer)
 
 ; I played around with using #'read for netlogo code, which would have been neat.
@@ -86,15 +82,15 @@
 (deflex :initial *nonnewline_white_space_char* (constantly nil))
 (deflex :initial "\\n|\\r" (constantly nil))
 ;(deflex :initial ";.*[\n\r]?" nil)
-;(deflex :initial (format nil "-?\.?[0-9]~A" *identifier-char*)
-; (lambda (text)
-;  (let
-;   ((num?
-;     (let
-;      ((*readtable* (copy-readtable nil))
-;       (*read-eval* nil))
-;      (read-from-string text))))
-;   (if (numberp num?) num? (error "Invalid number")))))
+(deflex :initial (format nil "-?\.?[0-9]~A*" *identifier-char*)
+ (lambda (text)
+  (let
+   ((num?
+     (let
+      ((*readtable* (copy-readtable nil))
+       (*read-eval* nil))
+      (read-from-string text))))
+   (if (numberp num?) num? (error "Invalid number")))))
 
 (deflex :initial (format nil "~A*" *identifier-char*) #'as-symbol)
 ;(deflex :initial (format nil "\"~A*\"" *string-text*))

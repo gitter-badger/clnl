@@ -1,2 +1,2 @@
 (defpackage #:cl-nl-test (:use :common-lisp :cl-nl)
- (:export :run-tests))
+ (:export :run-all-tests :run :diagnose-test))

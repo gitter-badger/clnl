@@ -6,6 +6,9 @@
   :serial t
   :components ((:file "package")
                (:file "lex")
+               (:file "parse")
+               (:file "nvm")
+               (:file "transpile")
                (:file "random")
                (:file "main"))
-  :depends-on (:cl-ppcre))
+  :depends-on (:cl-ppcre :mt19937))

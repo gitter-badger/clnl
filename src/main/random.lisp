@@ -1,7 +1,3 @@
-(defpackage #:cl-nl.random
- (:use :common-lisp)
- (:export :set-seed :next-int :next-double))
-
 (in-package #:cl-nl.random)
 
 ; This is a wrapper around the very nice mersenne twister mt19937 to match
@@ -22,3 +18,15 @@
    (+ (ash (ash y -6) 27) (ash z -5))
    (coerce (ash 1 53) 'double-float))
   n)))
+
+; Oh, export world, you WILL be mine
+(defun export ()
+ (let
+  ((state
+    (map
+     'list
+     (lambda (x) (if (logbitp (1- 32) x) (dpb x (byte 32 0) -1) x))
+     (mt19937::random-state-state mt19937:*random-state*))))
+  (format nil "0 ~A ~A ~A 0.0 false 1 ~{~A~^ ~}"
+   (first state) (second state) (third state)
+   (nthcdr 4 state))))
