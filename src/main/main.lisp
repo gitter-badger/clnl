@@ -17,7 +17,9 @@
        do (p (e (r str)))))
 
 (defun boot ()
- (cl-nl.random:set-seed 15))
+ (cl-nl.random:set-seed 15)
+ (cl-nl.nvm:create-world)
+ )
 
 (defun run-commands (cmds)
  (eval (cl-nl.transpiler:transpile-command-block (cl-nl.parser:parse  (cl-nl.lexer:lex cmds)))))

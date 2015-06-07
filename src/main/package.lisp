@@ -16,9 +16,8 @@
 
 (defpackage #:cl-nl.nvm
  (:use :common-lisp)
- (:export :export-world))
+ (:export :export-world :create-world))
 
 (defpackage #:cl-nl.lexer
  (:use :common-lisp)
  (:export :lex))
-
