@@ -27,6 +27,6 @@
      'list
      (lambda (x) (if (logbitp (1- 32) x) (dpb x (byte 32 0) -1) x))
      (mt19937::random-state-state mt19937:*random-state*))))
-  (format nil "0 ~A ~A ~A 0.0 false 1 ~{~A~^ ~}"
+  (format nil "0 ~A ~A ~A 0.0 false ~{~A~^ ~}"
    (first state) (second state) (third state)
-   (nthcdr 4 state))))
+   (nthcdr 3 state))))

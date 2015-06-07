@@ -8,7 +8,7 @@
 (defpackage #:cl-nl.random
  (:use :common-lisp)
  (:shadow #:export)
- (:export #:set-seed #:next-int #:next-double))
+ (:export #:export #:set-seed #:next-int #:next-double))
 
 (defpackage #:cl-nl.transpiler
  (:use :common-lisp)

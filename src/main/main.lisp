@@ -16,7 +16,8 @@
        while str
        do (p (e (r str)))))
 
-(defun boot ())
+(defun boot ()
+ (cl-nl.random:set-seed 15))
 
 (defun run-commands (cmds)
  (eval (cl-nl.transpiler:transpile-command-block (cl-nl.parser:parse  (cl-nl.lexer:lex cmds)))))
