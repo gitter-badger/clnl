@@ -24,21 +24,17 @@
 
 (defun prim-name (prim) (getf prim :name))
 (defun prim-num-args (prim) (length (getf prim :args)))
+(defun prim-args (prim) (getf prim :args))
 
 (defun find-prim (symb) (find symb *prims* :key #'prim-name))
 
-; We don't care if it's a command!
-;(defun is-command (symb)
-; (let
-;  ((prim (find-prim symb)))
-; (and prim (eql :command (getf prim :type)))))
-  
 ; Make this only as complicated as it needs to be, letting it grow
 ; as we take on more and more of the language
 (defun parse (lexed-ast)
  (cond
   ((not lexed-ast) nil)
   ((numberp (car lexed-ast)) (cons (coerce (car lexed-ast) 'double-float) (parse (cdr lexed-ast))))
+  ((eql :[ (car lexed-ast)) (parse-block (cdr lexed-ast)))
   ((and (symbolp (car lexed-ast)) (find-prim (car lexed-ast)))
    (let*
     ((prim (find-prim (car lexed-ast)))
@@ -47,9 +43,37 @@
     (cons
      (cons
       (prim-name prim)
-      (butlast parsed-remainder (- (length parsed-remainder) num-args)))
+      (mapcar
+       #'help-arg
+       (prim-args prim) 
+       (butlast parsed-remainder (- (length parsed-remainder) num-args))))
      (nthcdr num-args parsed-remainder))))
   (t (error "Couldn't parse ~S" lexed-ast))))
+
+(defun help-arg (arg-type arg)
+ (case arg-type
+  (:command-block
+   (if (not (and (consp arg) (eql 'block (car arg))))
+       (error "Required a block, but found a ~A" arg)
+       (cons :command-block (cdr arg))))
+  (t arg)))
+
+(defun parse-block (tokens)
+ (multiple-value-bind (in-block after-block) (find-closing-bracket tokens)
+  (cons
+   (cons
+    'block
+    (parse in-block))
+   (parse after-block))))
+
+(defun find-closing-bracket (tokens &optional (depth 0))
+ (cond
+  ((not tokens) (error "Failed to find a matching closing bracket"))
+  ((and (eql :] (car tokens)) (= depth 0)) (values nil (cdr tokens)))
+  (t (multiple-value-bind
+      (in-block after-block)
+      (find-closing-bracket (cdr tokens) (case (car tokens) (:[ (1+ depth)) (:] (1- depth)) (t depth)))
+      (values (cons (car tokens) in-block) after-block)))))
 
 (defmacro defprim (name args)
  `(push
@@ -60,5 +84,8 @@
 ; Current list of argument types we accept:
 ; - :number
 ; - t - any type
+(defprim :ask (:agentset :command-block))
 (defprim :crt (:number))
+(defprim :fd (:number))
 (defprim :show (t))
+(defprim :turtles ())

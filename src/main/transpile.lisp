@@ -21,7 +21,7 @@
 
 ; Let this grow, slowly but surely, eventually taking on calling context, etc.
 ; For now, it's just a 
-(defun transpile-command-block (parsed-ast)
+(defun transpile-commands (parsed-ast)
  `(progn
    ,@(mapcar #'transpile-command parsed-ast)))
 
@@ -37,9 +37,13 @@
   ((numberp reporter) reporter) ; The parser converts to double for us
   ((symbolp reporter) reporter) ; The parser should have checked that having a symbol here is ok
   ((not (listp reporter)) (error "Expected a statement of some sort"))
+  ((eql :command-block (car reporter)) (transpile-command-block reporter))
   ((not (find-prim (car reporter))) (error "Couldn't find the reporter for ~S" (car reporter)))
   ((not (is-reporter (find-prim (car reporter)))) (error "Expected reporter, got ~S" (car reporter)))
   (t `(,(prim-func (find-prim (car reporter))) ,@(mapcar #'transpile-reporter (cdr reporter))))))
+
+(defun transpile-command-block (block)
+ `(lambda () ,@(mapcar #'transpile-command (cdr block))))
 
 (defmacro defprim (name type nvm-func)
  `(push
@@ -47,5 +51,8 @@
    *prims*))
 
 ; We count on the parser to handle arguemnts for us, when collating things.
+(defprim :ask :command cl-nl.nvm::ask)
 (defprim :crt :command cl-nl.nvm::create-turtles)
+(defprim :fd :command cl-nl.nvm::fd)
 (defprim :show :command cl-nl.nvm::show)
+(defprim :turtles :reporter cl-nl.nvm::turtles)

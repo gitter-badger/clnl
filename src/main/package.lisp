@@ -12,7 +12,7 @@
 
 (defpackage #:cl-nl.transpiler
  (:use :common-lisp)
- (:export :transpile-command-block))
+ (:export :transpile-commands))
 
 (defpackage #:cl-nl.nvm
  (:use :common-lisp)

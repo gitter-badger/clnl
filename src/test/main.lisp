@@ -20,7 +20,7 @@
 
 (defun run-all-tests ()
  (format t "~%Here we goooooooo~%")
- (run-tests *tests*))
+ (run-tests (reverse *tests*)))
   
 (defun run-tests-matching (match)
  (run-tests (remove-if-not (lambda (test-name) (cl-ppcre:scan (format nil "^~A$" match) test-name)) *tests* :key #'car)))

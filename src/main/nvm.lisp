@@ -4,8 +4,10 @@
 
 (defvar *current-id* 0)
 
-(defstruct turtle who color heading)
+(defstruct turtle who color heading xcor ycor)
 (defvar *turtles* nil)
+(defvar *myself* nil)
+(defvar *self* nil)
 
 (defun show (n)
  (format t "Showing: ~A~%" n))
@@ -14,9 +16,38 @@
  (push
   (make-turtle :who *current-id*
                :color (coerce (+ 5 (* 10 (cl-nl.random:next-int 14))) 'double-float)
-               :heading (coerce (cl-nl.random:next-int 360) 'double-float))
+               :heading (coerce (cl-nl.random:next-int 360) 'double-float)
+               :xcor 0d0
+               :ycor 0d0)
   *turtles*)
  (incf *current-id*))
+
+(defun turtles () *turtles*)
+
+(defun ask (agent-set fn)
+ (mapcar
+  (lambda (agent)
+   (let
+    ((*myself* *self*)
+     (*self* agent))
+    (funcall fn)))
+  (shuffle agent-set)))
+
+(defun shuffle (agent-set)
+ (let
+  ((copy (copy-list agent-set)))
+  (append
+   (loop for i to (- (length copy) 2)
+         for idx = (+ i (cl-nl.random:next-int (- (length copy) i)))
+         for next = (nth idx copy)
+         do (setf (nth idx copy) (nth i copy))
+         collect next)
+   (last copy))))
+
+(defun fd (n)
+ (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude"))
+ (setf (turtle-xcor *self*) (+ (turtle-xcor *self*) (sin (* pi (/ (turtle-heading *self*) 180)))))
+ (setf (turtle-ycor *self*) (+ (turtle-ycor *self*) (cos (* pi (/ (turtle-heading *self*) 180))))))
 
 (defun create-turtles (n)
  (loop for i from 1 to n do (create-turtle)))
@@ -47,10 +78,13 @@
     (mapcar
      (lambda (turtle)
       (format nil
-       "\"~A\",\"~A\",\"~A\",\"0\",\"0\",\"\"\"default\"\"\",\"\"\"\"\"\",\"9.9\",\"{all-turtles}\",\"false\",\"1\",\"1\",\"\"\"up\"\"\""
+       "\"~A\",\"~A\",\"~A\",\"~A\",\"~A\",\"\"\"default\"\"\",\"\"\"\"\"\",\"9.9\",\"{all-turtles}\",\"false\",\"1\",\"1\",\"\"\"up\"\"\""
        (turtle-who turtle)
        (format-num (turtle-color turtle))
-       (format-num (turtle-heading turtle))))
+       (format-num (turtle-heading turtle))
+       (format-num (turtle-xcor turtle))
+       (format-num (turtle-ycor turtle))
+       ))
      (reverse *turtles*)))
    (format nil "~S" "PATCHES")
    "\"pxcor\",\"pycor\",\"pcolor\",\"plabel\",\"plabel-color\""

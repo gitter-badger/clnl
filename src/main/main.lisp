@@ -6,7 +6,7 @@
  (let*
   ((lexed-ast (let ((ast (cl-nl.lexer:lex str))) (format t "Via lexing, AST for ~S became ~S~%" str ast) ast))
    (parsed-ast (let ((ast (cl-nl.parser:parse lexed-ast))) (format t "Via parsing, AST for ~S became ~S~%" lexed-ast ast) ast))
-   (transpiled-ast (let ((ast (cl-nl.transpiler:transpile-command-block parsed-ast))) (format t "Via transpiling, AST for ~S became ~S~%" parsed-ast ast) ast)))
+   (transpiled-ast (let ((ast (cl-nl.transpiler:transpile-commands parsed-ast))) (format t "Via transpiling, AST for ~S became ~S~%" parsed-ast ast) ast)))
   (eval transpiled-ast)))
 
 (defun p (result) result)
@@ -22,4 +22,4 @@
  )
 
 (defun run-commands (cmds)
- (eval (cl-nl.transpiler:transpile-command-block (cl-nl.parser:parse  (cl-nl.lexer:lex cmds)))))
+ (eval (cl-nl.transpiler:transpile-commands (cl-nl.parser:parse  (cl-nl.lexer:lex cmds)))))
