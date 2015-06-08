@@ -48,3 +48,4 @@
 
 ; We count on the parser to handle arguemnts for us, when collating things.
 (defprim :crt :command cl-nl.nvm::create-turtles)
+(defprim :show :command cl-nl.nvm::show)

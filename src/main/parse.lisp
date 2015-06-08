@@ -57,4 +57,8 @@
    *prims*))
 
 ; This list of prims will get combined with the mapping to actual code later
+; Current list of argument types we accept:
+; - :number
+; - t - any type
 (defprim :crt (:number))
+(defprim :show (t))

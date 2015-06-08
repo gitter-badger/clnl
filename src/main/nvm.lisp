@@ -7,6 +7,9 @@
 (defstruct turtle who color heading)
 (defvar *turtles* nil)
 
+(defun show (n)
+ (format t "Showing: ~A~%" n))
+
 (defun create-turtle ()
  (push
   (make-turtle :who *current-id*
