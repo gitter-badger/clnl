@@ -13,44 +13,53 @@
  (format t "Showing: ~A~%" (dump-object n)))
 
 (defun create-turtle ()
- (push
-  (make-turtle :who *current-id*
-               :color (coerce (+ 5 (* 10 (cl-nl.random:next-int 14))) 'double-float)
-               :heading (coerce (cl-nl.random:next-int 360) 'double-float)
-               :xcor 0d0
-               :ycor 0d0)
-  *turtles*)
+ (setf
+  *turtles*
+  (nconc
+   *turtles*
+   (list
+    (make-turtle :who *current-id*
+                 :color (coerce (+ 5 (* 10 (cl-nl.random:next-int 14))) 'double-float)
+                 :heading (coerce (cl-nl.random:next-int 360) 'double-float)
+                 :xcor 0d0
+                 :ycor 0d0))))
  (incf *current-id*))
 
 (defun turtles () *turtles*)
 
 (defun ask (agent-set fn)
- (mapcar
-  (lambda (agent)
-   (let
-    ((*myself* *self*)
-     (*self* agent))
-    (funcall fn)))
-  (shuffle agent-set)))
-
-(defun shuffle (agent-set)
  (let
-  ((copy (copy-list agent-set)))
-  (append
-   (loop for i to (- (length copy) 2)
-         for idx = (+ i (cl-nl.random:next-int (- (length copy) i)))
-         for next = (nth idx copy)
-         do (setf (nth idx copy) (nth i copy))
-         collect next)
-   (last copy))))
+  ((iter (shufflerator agent-set)))
+  (loop for agent = (funcall iter)
+        while agent
+        do (let ((*myself* *self*) (*self* agent)) (funcall fn)))))
+
+(defun shufflerator (agent-set)
+ (let
+  ((copy (copy-list agent-set))
+   (i 0)
+   (agent nil))
+  (flet
+   ((fetch ()
+     (let
+      ((idx (when (< i (1- (length copy))) (+ i (cl-nl.random:next-int (- (length copy) i))))))
+      (when idx (setf agent (nth idx copy)))
+      (when idx (setf (nth idx copy) (nth i copy)))
+      (incf i))))
+   (fetch) ; we pre-fetch because netlogo does, rng sync hype!
+   (lambda ()
+    (cond
+     ((> i (length copy)) nil)
+     ((= i (length copy)) (incf i) (car (last copy)))
+     (t (let ((result agent)) (fetch) result)))))))
 
 (defun random-float (n)
  (cl-nl.random:next-double n))
 
 (defun fd (n)
- (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude"))
- (setf (turtle-xcor *self*) (+ (turtle-xcor *self*) (sin (* pi (/ (turtle-heading *self*) 180)))))
- (setf (turtle-ycor *self*) (+ (turtle-ycor *self*) (cos (* pi (/ (turtle-heading *self*) 180))))))
+ (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude (~A)" *self*))
+ (setf (turtle-xcor *self*) (+ (turtle-xcor *self*) (* n (sin (* pi (/ (turtle-heading *self*) 180))))))
+ (setf (turtle-ycor *self*) (+ (turtle-ycor *self*) (* n (cos (* pi (/ (turtle-heading *self*) 180)))))))
 
 (defun create-turtles (n)
  (loop for i from 1 to n do (create-turtle)))
@@ -59,12 +68,15 @@
  (setf *turtles* nil)
  (setf *current-id* 0))
 
+; These match netlogo's dump
 (defgeneric dump-object (o))
 (defmethod dump-object ((n double-float))
  (multiple-value-bind (int rem) (floor n)
   (if (eql 0d0 rem)
       (format nil "~A" int)
-      (format nil "~F" n))))
+      (let
+       ((output (format nil "~D" n)))
+       (cl-ppcre:regex-replace "d-" (cl-ppcre:regex-replace "d0" output "") "E-"))))) ; Someday we'll have d<posint>, but this is not that day!
 (defmethod dump-object ((o string)) o)
 
 (defun export-world ()
@@ -90,7 +102,7 @@
        (dump-object (turtle-xcor turtle))
        (dump-object (turtle-ycor turtle))
        ))
-     (reverse *turtles*)))
+     *turtles*))
    (format nil "~S" "PATCHES")
    "\"pxcor\",\"pycor\",\"pcolor\",\"plabel\",\"plabel-color\""
    "\"-1\",\"1\",\"0\",\"\"\"\"\"\",\"9.9\""

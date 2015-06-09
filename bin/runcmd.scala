@@ -18,7 +18,6 @@ exec scalas "$0" -q "$@"
 */
 
 import org.nlogo.headless.HeadlessWorkspace
-import org.nlogo.mirror
 import org.nlogo.api
 import org.nlogo.nvm
 import org.nlogo.util.Utils.url2String

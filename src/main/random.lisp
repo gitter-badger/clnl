@@ -7,7 +7,10 @@
  (setf mt19937:*random-state* (mt19937::make-random-object :state (mt19937:init-random-state n))))
 
 (defun next-int (n)
- (rem (ash (mt19937:random-chunk mt19937:*random-state*) -1) n))
+ (if
+  (= n (logand n (- n) ))
+  (ash (* n (ash (mt19937:random-chunk mt19937:*random-state*) -1) ) -31)
+  (rem (ash (mt19937:random-chunk mt19937:*random-state*) -1) n)))
 
 (defun next-double (&optional (n 1d0))
  (let
