@@ -83,9 +83,12 @@
 ; This list of prims will get combined with the mapping to actual code later
 ; Current list of argument types we accept:
 ; - :number
+; - :agentset
+; - :command-block
 ; - t - any type
 (defprim :ask (:agentset :command-block))
 (defprim :crt (:number))
 (defprim :fd (:number))
+(defprim :random-float (:number))
 (defprim :show (t))
 (defprim :turtles ())

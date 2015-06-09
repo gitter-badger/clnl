@@ -33,10 +33,10 @@
 (defun lex (text)
  (if (string= "" text)
      (let
-      ((lex (find-if (lambda (f) (funcall f *state* :eof)) *lexes* :key #'car)))
+      ((lex (find-if (lambda (f) (funcall f *state* :eof)) *lexes* :from-end t :key #'car)))
       (when lex (list (funcall (third lex) :eof))))
      (let
-      ((lex (find-if (lambda (f) (funcall f *state* text)) *lexes* :key #'car)))
+      ((lex (find-if (lambda (f) (funcall f *state* text)) *lexes* :from-end t :key #'car)))
       (when (not lex) (error "Can't lex this: ~S" text))
       (let
        ((val (funcall (third lex) (subseq text 0 (funcall (cadr lex) text)))))
@@ -54,7 +54,7 @@
 (defvar *letter* "\\w")
 (defvar *digit* "\\d")
 ;(defparameter *identifier-char* "[\\w\\d_\\.?=\*!<>:#\+/%\$\^\'&-]")
-(defvar *identifier-char* "[\\w\\d]")
+(defvar *identifier-char* "[\\w\\d-.]")
 
 ;(defvar *extension-literal-depth* 0)
 ;(defstruct extension-literal text)

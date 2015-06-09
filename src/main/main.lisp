@@ -23,3 +23,6 @@
 
 (defun run-commands (cmds)
  (eval (cl-nl.transpiler:transpile-commands (cl-nl.parser:parse  (cl-nl.lexer:lex cmds)))))
+
+(defun run-reporter (reporter)
+ (eval (cl-nl.transpiler:transpile-reporter (car (cl-nl.parser:parse (cl-nl.lexer:lex reporter))))))

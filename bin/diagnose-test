@@ -4,16 +4,24 @@ if ! [ -n "$1" ] ; then
   echo "Uhm, need a test name, yo"
   exit 1
 fi
-TEST=$1
+TEST=$@
 
 sbcl --eval "(asdf:load-system :cl-nl-test)" --eval "(quit)" &> /dev/null
-COMMANDS=$(sbcl --noinform --disable-ldb --lose-on-corruption --end-runtime-options --eval "(asdf:load-system :cl-nl-test)" --eval "(cl-nl-test::test-commands \"$1\")" --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2)
 
-scalafile=$(mktemp -u -p .)
-clfile=$(mktemp -u -p .)
+runtestfn() {
+  sbcl --noinform --disable-ldb --lose-on-corruption --end-runtime-options \
+    --eval "(asdf:load-system :cl-nl-test)" \
+    --eval "(cl-nl-test::$1 \"$TEST\")" \
+    --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2
+}
 
-echo "$COMMANDS" | bin/runcmd.scala | sed -n '/^----$/,$p' | tail -n +2 > $scalafile
-sbcl --noinform --disable-ldb --lose-on-corruption --end-runtime-options --eval "(asdf:load-system :cl-nl-test)" --eval "(cl-nl-test::diagnose-test \"$1\")" --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2 > $clfile
+scalaprog=$(runtestfn "test-scala-prog")
+
+scalafile=$(mktemp -u -p . --suffix .scala.dat)
+clfile=$(mktemp -u -p . --suffix .cl.dat)
+
+runtestfn "test-scala-input" | $scalaprog | sed -n '/^----$/,$p' | tail -n +2 > $scalafile
+runtestfn "test-debug" >$clfile
 
 vimdiff $scalafile $clfile
 

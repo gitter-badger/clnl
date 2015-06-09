@@ -54,5 +54,6 @@
 (defprim :ask :command cl-nl.nvm::ask)
 (defprim :crt :command cl-nl.nvm::create-turtles)
 (defprim :fd :command cl-nl.nvm::fd)
+(defprim :random-float :reporter cl-nl.nvm::random-float)
 (defprim :show :command cl-nl.nvm::show)
 (defprim :turtles :reporter cl-nl.nvm::turtles)

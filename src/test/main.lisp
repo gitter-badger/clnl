@@ -25,38 +25,56 @@
 (defun run-tests-matching (match)
  (run-tests (remove-if-not (lambda (test-name) (cl-ppcre:scan (format nil "^~A$" match) test-name)) *tests* :key #'car)))
 
-(defun find-test (name) (find name *tests* :test #'string= :key #'car))
+(defun find-test (name)
+ (or
+  (find name *tests* :test #'string= :key #'car)
+  (error "Couldn't find test with name: ~A" name)))
 
-(defun diagnose-test (name)
- (when (not (find-test name)) (error "Couldn't find test with name: ~A" name))
- (format t "----~%~A~%" (funcall (caddr (find-test name)))))
+(defun test-debug (name) (format t "----~%~A~%" (funcall (third (find-test name)))))
+(defun test-scala-prog (name) (format t "----~%~A~%" (fourth (find-test name))))
+(defun test-scala-input (name) (format t "----~%~A~%" (fifth (find-test name))))
 
-(defun test-commands (name)
- (let
-  ((test (find-test name)))
-  (when (not test) (error "Couldn't find test with name: ~A" name))
-  (format t "----~%")
-  (format t "~A~%" (funcall (fourth test)))))
-
-; To be used only with the simplest of tests, just a list of commands and a checksum of the
-; world after they've been run.
-(defmacro defsimpletest (name commands checksum)
+(defmacro defsimpletest (name test-fn debug-fn scala-prog scala-input)
  `(progn
    ;(when (find-test ,name) (error "Test with name ~S already exists, abort, abort" ,name))
    (push
-    (list
-     ,name
-     (lambda ()
-      (cl-nl:boot)
-      (cl-nl:run-commands ,commands)
-      (string= ,checksum (checksum-world)))
-     (lambda ()
-      (cl-nl:boot)
-      (cl-nl:run-commands ,commands)
-      (cl-nl.nvm:export-world)
-      )
-     (lambda () ,commands))
-   *tests*)))
+    (list ,name ,test-fn ,debug-fn ,scala-prog ,scala-input)
+    *tests*)))
+
+; To be used only with the simplest of tests, just a list of commands and a checksum of the
+; world after they've been run.
+(defmacro defsimplecommandtest (name commands checksum)
+ `(defsimpletest
+   ,name
+   (lambda ()
+    (cl-nl:boot)
+    (cl-nl:run-commands ,commands)
+    (string= ,checksum (checksum-world)))
+   (lambda ()
+    (cl-nl:boot)
+    (cl-nl:run-commands ,commands)
+    (format nil "~A~A"
+     (cl-nl.nvm:export-world)
+     (checksum-world)))
+   "bin/runcmd.scala"
+   (format nil "~A~%" ,commands)))
+
+(defmacro defsimplereportertest (name reporter value checksum)
+ `(defsimpletest
+   ,name
+   (lambda ()
+    (cl-nl:boot)
+    (and
+     (string= (cl-nl.nvm:dump-object (cl-nl:run-reporter ,reporter)) ,value)
+     (string= ,checksum (checksum-world))))
+   (lambda ()
+    (cl-nl:boot)
+    (format nil "~A~%~A~A"
+     (cl-nl.nvm:dump-object (cl-nl:run-reporter ,reporter))
+     (cl-nl.nvm:export-world)
+     (checksum-world)))
+   "bin/runreporter.scala"
+   (format nil "~A~%" ,reporter)))
 
 (defun checksum-world ()
  (format nil "~{~2,'0X~}"

@@ -10,7 +10,7 @@
 (defvar *self* nil)
 
 (defun show (n)
- (format t "Showing: ~A~%" n))
+ (format t "Showing: ~A~%" (dump-object n)))
 
 (defun create-turtle ()
  (push
@@ -44,6 +44,9 @@
          collect next)
    (last copy))))
 
+(defun random-float (n)
+ (cl-nl.random:next-double n))
+
 (defun fd (n)
  (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude"))
  (setf (turtle-xcor *self*) (+ (turtle-xcor *self*) (sin (* pi (/ (turtle-heading *self*) 180)))))
@@ -56,11 +59,13 @@
  (setf *turtles* nil)
  (setf *current-id* 0))
 
-(defun format-num (n)
+(defgeneric dump-object (o))
+(defmethod dump-object ((n double-float))
  (multiple-value-bind (int rem) (floor n)
   (if (eql 0d0 rem)
       (format nil "~A" int)
       (format nil "~F" n))))
+(defmethod dump-object ((o string)) o)
 
 (defun export-world ()
  (format nil "~{~A~%~}"
@@ -80,10 +85,10 @@
       (format nil
        "\"~A\",\"~A\",\"~A\",\"~A\",\"~A\",\"\"\"default\"\"\",\"\"\"\"\"\",\"9.9\",\"{all-turtles}\",\"false\",\"1\",\"1\",\"\"\"up\"\"\""
        (turtle-who turtle)
-       (format-num (turtle-color turtle))
-       (format-num (turtle-heading turtle))
-       (format-num (turtle-xcor turtle))
-       (format-num (turtle-ycor turtle))
+       (dump-object (turtle-color turtle))
+       (dump-object (turtle-heading turtle))
+       (dump-object (turtle-xcor turtle))
+       (dump-object (turtle-ycor turtle))
        ))
      (reverse *turtles*)))
    (format nil "~S" "PATCHES")

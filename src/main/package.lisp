@@ -1,5 +1,5 @@
 (defpackage #:cl-nl (:use :common-lisp)
- (:export :run :boot :run-commands))
+ (:export :run :boot :run-commands :run-reporter))
 
 (defpackage #:cl-nl.parser
  (:use :common-lisp)
@@ -12,11 +12,11 @@
 
 (defpackage #:cl-nl.transpiler
  (:use :common-lisp)
- (:export :transpile-commands))
+ (:export :transpile-commands :transpile-reporter))
 
 (defpackage #:cl-nl.nvm
  (:use :common-lisp)
- (:export :export-world :create-world))
+ (:export :export-world :create-world :dump-object))
 
 (defpackage #:cl-nl.lexer
  (:use :common-lisp)
