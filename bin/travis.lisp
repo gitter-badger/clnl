@@ -17,7 +17,7 @@
 
 (format t "~%~c[1;33mChecking Docs~c[0m~%" #\Esc #\Esc)
 (when (not (docgen:pretty-print-validate-packages
-            :clnl :clnl-parser :clnl-random :clnl-transpiler :clnl-nvm :clnl-lexer :clnl-interface))
+            :clnl :clnl-parser :clnl-random :clnl-transpiler :clnl-nvm :clnl-lexer :clnl-interface :clnl-cli))
  (format t "~c[1;31mFailed doc check!~c[0m~%" #\Esc #\Esc)
  (sb-ext:exit :code 1))
 (format t "~c[1;32m- Doc Check Passed!~c[0m~%" #\Esc #\Esc)

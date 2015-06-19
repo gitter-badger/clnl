@@ -60,7 +60,7 @@
  (cl-glut:post-redisplay))
 
 (defun close-func ()
- (sb-ext:exit))
+ (sb-ext:exit :abort t))
 
 (defun reshape (width height)
  (when (and (/= 0 width) (/= 0 height))

@@ -16,6 +16,7 @@
                (:file "transpile")
                (:file "random")
                (:file "interface")
+               (:file "cli")
                (:file "main")))
 
 (asdf:defsystem clnl
@@ -23,4 +24,4 @@
   :version "0.0.1"
   :maintainer "Frank Duncan (frank@kank.com)"
   :author "Frank Duncan (frank@kank.com)"
-  :depends-on (:cl-ppcre :mt19937 :cl-opengl :cl-glut :clnl.internal))
+  :depends-on (:cl-ppcre :mt19937 :cl-opengl :cl-glut :cl-charms :clnl.internal))

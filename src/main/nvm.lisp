@@ -22,6 +22,9 @@ DESCRIPTION:
   See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#show"
  (format t "Showing: ~A~%" (dump-object value)))
 
+(defun world-dimensions ()
+ (list :xmin -10 :xmax 10 :ymin -10 :ymax 10))
+
 (defun create-turtle ()
  (setf
   *turtles*

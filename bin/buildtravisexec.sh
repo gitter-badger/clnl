@@ -20,6 +20,7 @@ mkdir -p tmp/deps/
   tar zxf ../../deps/tarpit/mt19937-latest.tar.gz &&
   tar zxf ../../deps/tarpit/nibbles-v0.12.tar.gz &&
   tar zxf ../../deps/tarpit/trivial-features_0.8.tar.gz &&
+  tar zxf ../../deps/tarpit/cl-charms-9bb94ef.tar.gz &&
   tar zxf ../../deps/tarpit/style-checker_0.1.tar.gz &&
   tar zxf ../../deps/tarpit/docgen_0.1.tar.gz &&
   ln -s cl-ppcre-2.0.10/cl-ppcre.asd . &&
@@ -37,8 +38,9 @@ mkdir -p tmp/deps/
   ln -s cffi_0.15.0/cffi-grovel.asd . &&
   ln -s cffi_0.15.0/cffi-uffi-compat.asd . &&
   ln -s trivial-features_0.8/trivial-features.asd . &&
+  ln -s cl-charms/cl-charms.asd . &&
   ln -s style-checker_0.1/style-checker.asd . &&
-  ln -s docgen_0.1/docgenasd .
+  ln -s docgen_0.1/docgen.asd .
 )
 
 
@@ -50,6 +52,7 @@ SBCL_HOME="" tmp/sbcl/bin/sbcl --core tmp/sbcl/lib/sbcl/sbcl.core \
   --eval "(asdf:load-system :ironclad)" \
   --eval "(asdf:load-system :cl-opengl)" \
   --eval "(asdf:load-system :cl-glut)" \
+  --eval "(asdf:load-system :cl-charms)" \
   --eval "(asdf:load-system :style-checker)" \
   --eval "(asdf:load-system :docgen)" \
   --eval "(asdf:clear-output-translations)" \

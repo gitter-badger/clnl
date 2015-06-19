@@ -3,4 +3,4 @@
 (push #p"deps/" asdf:*central-registry*)
 (asdf:load-system :clnl)
 (sb-thread:make-thread #'clnl-interface:run)
-(clnl:run)
+(clnl-cli:run)
