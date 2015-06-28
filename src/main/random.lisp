@@ -1,4 +1,4 @@
-(in-package #:cl-nl.random)
+(in-package #:clnl-random)
 
 ; This is a wrapper around the very nice mersenne twister mt19937 to match
 ; NetLogo's implementation that tries to match how java.util.Random works

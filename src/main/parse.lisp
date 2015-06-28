@@ -1,4 +1,4 @@
-(in-package #:cl-nl.parser)
+(in-package #:clnl-parser)
 
 ; Ok, after thinking about this a little, the parser is completely contextual
 ; based on what has come before.  We can't do a contextless parsing, like we

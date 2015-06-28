@@ -1,4 +1,4 @@
-(asdf:defsystem cl-nl
+(asdf:defsystem clnl
   :name "Experiment"
   :version "0.0.1"
   :maintainer "Frank Duncan (frank@kank.com)"

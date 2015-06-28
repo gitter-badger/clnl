@@ -1,4 +1,4 @@
-(in-package #:cl-nl.transpiler)
+(in-package #:clnl-transpiler)
 
 ; This is responsible for taking an ast and turning it into valid CL code
 ; targeting the nvm.  Here is where start to care about commands versus reporters
@@ -8,6 +8,10 @@
 ; the users dictate based on entry point whether they are expecting a command
 ; or a reporter.  So monitors can say "hey, transpile this reporter" and we'll check
 ; to make sure it actually is.
+
+; Furthermore, the lisp code that any netlogo code would be transpiled to should
+; use exported symbols, such that anyone writing NetLogo code in lisp could use
+; the nvm in the same way that comes out of this transpiler
 
 (defparameter *prims* nil)
 
@@ -51,9 +55,9 @@
    *prims*))
 
 ; We count on the parser to handle arguemnts for us, when collating things.
-(defprim :ask :command cl-nl.nvm::ask)
-(defprim :crt :command cl-nl.nvm::create-turtles)
-(defprim :fd :command cl-nl.nvm::fd)
-(defprim :random-float :reporter cl-nl.nvm::random-float)
-(defprim :show :command cl-nl.nvm::show)
-(defprim :turtles :reporter cl-nl.nvm::turtles)
+(defprim :ask :command clnl-nvm:ask)
+(defprim :crt :command clnl-nvm:create-turtles)
+(defprim :fd :command clnl-nvm:forward)
+(defprim :random-float :reporter clnl-nvm:random-float)
+(defprim :show :command clnl-nvm:show)
+(defprim :turtles :reporter clnl-nvm:turtles)

@@ -1,4 +1,4 @@
-(in-package #:cl-nl-test)
+(in-package #:clnl-test)
 
 (defparameter *tests* nil)
 
@@ -47,14 +47,14 @@
  `(defsimpletest
    ,name
    (lambda ()
-    (cl-nl:boot)
-    (cl-nl:run-commands ,commands)
+    (clnl:boot)
+    (clnl:run-commands ,commands)
     (string= ,checksum (checksum-world)))
    (lambda ()
-    (cl-nl:boot)
-    (cl-nl:run-commands ,commands)
+    (clnl:boot)
+    (clnl:run-commands ,commands)
     (format nil "~A~A"
-     (cl-nl.nvm:export-world)
+     (clnl-nvm:export-world)
      (checksum-world)))
    "bin/runcmd.scala"
    (format nil "~A~%" ,commands)))
@@ -63,15 +63,15 @@
  `(defsimpletest
    ,name
    (lambda ()
-    (cl-nl:boot)
+    (clnl:boot)
     (and
-     (string= (cl-nl.nvm:dump-object (cl-nl:run-reporter ,reporter)) ,value)
+     (string= (clnl-nvm:dump-object (clnl:run-reporter ,reporter)) ,value)
      (string= ,checksum (checksum-world))))
    (lambda ()
-    (cl-nl:boot)
+    (clnl:boot)
     (format nil "~A~%~A~A"
-     (cl-nl.nvm:dump-object (cl-nl:run-reporter ,reporter))
-     (cl-nl.nvm:export-world)
+     (clnl-nvm:dump-object (clnl:run-reporter ,reporter))
+     (clnl-nvm:export-world)
      (checksum-world)))
    "bin/runreporter.scala"
    (format nil "~A~%" ,reporter)))
@@ -81,9 +81,9 @@
   (map 'list #'identity
    (ironclad:digest-sequence
     :sha1
-    (map '(vector (unsigned-byte 8)) #'char-code (cl-nl.nvm:export-world))))))
+    (map '(vector (unsigned-byte 8)) #'char-code (clnl-nvm:export-world))))))
 
 (defun run ()
  (loop for str = (progn (format t "> ") (force-output) (read-line))
        while str
-       do (progn (asdf:load-system :cl-nl-test) (run-tests-matching str))))
+       do (progn (asdf:load-system :clnl-test) (run-tests-matching str))))

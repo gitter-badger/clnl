@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sbcl --eval "(asdf:load-system :cl-nl-test)" --eval "(quit)" &> /dev/null
+sbcl --eval "(asdf:load-system :clnl-test)" --eval "(quit)" &> /dev/null
 rlwrap sbcl --script bin/test-mode.lisp

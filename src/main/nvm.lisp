@@ -1,4 +1,4 @@
-(in-package #:cl-nl.nvm)
+(in-package #:clnl-nvm)
 
 ; This is the engine.  Yay.
 
@@ -10,6 +10,9 @@
 (defvar *self* nil)
 
 (defun show (n)
+ "Prints value in the Command Center, preceded by this agent, and followed by a carriage return.
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#show"
  (format t "Showing: ~A~%" (dump-object n)))
 
 (defun create-turtle ()
@@ -19,15 +22,22 @@
    *turtles*
    (list
     (make-turtle :who *current-id*
-                 :color (coerce (+ 5 (* 10 (cl-nl.random:next-int 14))) 'double-float)
-                 :heading (coerce (cl-nl.random:next-int 360) 'double-float)
+                 :color (coerce (+ 5 (* 10 (clnl-random:next-int 14))) 'double-float)
+                 :heading (coerce (clnl-random:next-int 360) 'double-float)
                  :xcor 0d0
                  :ycor 0d0))))
  (incf *current-id*))
 
-(defun turtles () *turtles*)
+(defun turtles ()
+"Reports the agentset consisting of all turtles. 
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#turtles"
+ *turtles*)
 
 (defun ask (agent-set fn)
+"The specified agent or agentset runs the given commands.
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#ask"
  (let
   ((iter (shufflerator agent-set)))
   (loop for agent = (funcall iter)
@@ -42,7 +52,7 @@
   (flet
    ((fetch ()
      (let
-      ((idx (when (< i (1- (length copy))) (+ i (cl-nl.random:next-int (- (length copy) i))))))
+      ((idx (when (< i (1- (length copy))) (+ i (clnl-random:next-int (- (length copy) i))))))
       (when idx (setf agent (nth idx copy)))
       (when idx (setf (nth idx copy) (nth i copy)))
       (incf i))))
@@ -54,14 +64,30 @@
      (t (let ((result agent)) (fetch) result)))))))
 
 (defun random-float (n)
- (cl-nl.random:next-double n))
+"If number is positive, returns a random floating point number greater than or equal to 0 but strictly less than number.
 
-(defun fd (n)
+If number is negative, returns a random floating point number less than or equal to 0, but strictly greater than number.
+
+If number is zero, the result is always 0. 
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#random-float"
+ (clnl-random:next-double n))
+
+(defun forward (n)
+"The turtle moves forward by number steps, one step at a time. (If number is negative, the turtle moves backward.) 
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#forward"
  (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude (~A)" *self*))
  (setf (turtle-xcor *self*) (+ (turtle-xcor *self*) (* n (sin (* pi (/ (turtle-heading *self*) 180))))))
  (setf (turtle-ycor *self*) (+ (turtle-ycor *self*) (* n (cos (* pi (/ (turtle-heading *self*) 180)))))))
 
 (defun create-turtles (n)
+"Creates number new turtles at the origin. New turtles have random integer
+headings and the color is randomly selected from the 14 primary colors.
+
+If commands are supplied, the new turtles immediately run them.
+
+See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#create-turtles"
  (loop for i from 1 to n do (create-turtle)))
 
 (defun create-world ()
@@ -83,7 +109,7 @@
  (format nil "~{~A~%~}"
   (list
    (format nil "~S" "RANDOM STATE")
-   (format nil "~S" (cl-nl.random:export))
+   (format nil "~S" (clnl-random:export))
    ""
    (format nil "~S" "GLOBALS")
    "\"min-pxcor\",\"max-pxcor\",\"min-pycor\",\"max-pycor\",\"perspective\",\"subject\",\"nextIndex\",\"directed-links\",\"ticks\","

@@ -1,4 +1,4 @@
-(in-package #:cl-nl.lexer)
+(in-package #:clnl-lexer)
 
 ; I played around with using #'read for netlogo code, which would have been neat.
 ; However, it provides too many instances where people could inject CL code

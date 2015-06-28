@@ -1,1 +1,0 @@
-../src/test/cl-nl-test.asd
