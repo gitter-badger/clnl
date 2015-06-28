@@ -17,6 +17,11 @@ runtestfn() {
 
 scalaprog=$(runtestfn "test-scala-prog")
 
+if [ -z $scalaprog ] ; then
+  echo "Scala prog empty, so use view diagnosis rather than this one"
+  exit 1
+fi
+
 scalafile=$(mktemp -u -p . --suffix .scala.dat)
 clfile=$(mktemp -u -p . --suffix .cl.dat)
 

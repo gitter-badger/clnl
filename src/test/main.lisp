@@ -41,15 +41,20 @@
     (list ,name ,test-fn ,debug-fn ,scala-prog ,scala-input)
     *tests*)))
 
+(defun checksum= (expected got)
+ (if (stringp expected)
+     (string= got expected)
+     (find got expected :test #'string=)))
+
 ; To be used only with the simplest of tests, just a list of commands and a checksum of the
 ; world after they've been run.
 (defmacro defsimplecommandtest (name commands checksum)
  `(defsimpletest
-   ,name
+   (format nil "Simple Command - ~A" ,name)
    (lambda ()
     (clnl:boot)
     (clnl:run-commands ,commands)
-    (string= ,checksum (checksum-world)))
+    (checksum= ,checksum (checksum-world)))
    (lambda ()
     (clnl:boot)
     (clnl:run-commands ,commands)
@@ -61,12 +66,12 @@
 
 (defmacro defsimplereportertest (name reporter value checksum)
  `(defsimpletest
-   ,name
+   (format nil "Simple Reporter - ~A" ,name)
    (lambda ()
     (clnl:boot)
     (and
      (string= (clnl-nvm:dump-object (clnl:run-reporter ,reporter)) ,value)
-     (string= ,checksum (checksum-world))))
+     (checksum= ,checksum (checksum-world))))
    (lambda ()
     (clnl:boot)
     (format nil "~A~%~A~A"
@@ -76,12 +81,51 @@
    "bin/runreporter.scala"
    (format nil "~A~%" ,reporter)))
 
+(defmacro defviewtest (name commands checksum)
+ `(defsimpletest
+   (format nil "Simple View - ~A" ,name)
+   (lambda ()
+    (clnl:boot)
+    (clnl:run-commands ,commands)
+    (let
+     ((viewsum (checksum-view)))
+     (when (not (checksum= ,checksum viewsum))
+      (format t "~c[1;35m-- For ~A, got ~A but expected ~A~c[0m~%" #\Esc ,name viewsum ,checksum #\Esc))
+     (checksum= ,checksum (checksum-view))))
+   (lambda ()
+    (clnl:boot)
+    (clnl:run-commands ,commands)
+    (save-view-to-ppm)
+    (format nil "~A" (checksum-view)))
+   ""
+   (format nil "~A~%" ,commands)))
+
 (defun checksum-world ()
  (format nil "~{~2,'0X~}"
   (map 'list #'identity
    (ironclad:digest-sequence
     :sha1
     (map '(vector (unsigned-byte 8)) #'char-code (clnl-nvm:export-world))))))
+
+(defun checksum-view ()
+ (format nil "~{~2,'0X~}"
+  (map 'list #'identity
+   (ironclad:digest-sequence :sha1 (coerce (clnl-interface:export-view) '(vector (unsigned-byte 8)))))))
+
+(defun save-view-to-ppm ()
+ (let
+  ((height 143) (width 143)) ; hardcoded in interface, hardcoded here, cry for me
+  (with-open-file (str "cl.ppm" :direction :output :if-exists :supersede :if-does-not-exist :create :element-type '(unsigned-byte 8))
+   (write-sequence (map 'vector #'char-code (format nil "P6~%")) str)
+   (write-sequence (map 'vector #'char-code (format nil "143 143~%")) str)
+   (write-sequence (map 'vector #'char-code (format nil "255~%")) str)
+   (let
+    ((image-data (clnl-interface:export-view)))
+    (dotimes (i width)
+     (dotimes (j height)
+      (write-byte (aref image-data (+ 0 (* 4 (+ (* (- (1- height) i) width) j)))) str)
+      (write-byte (aref image-data (+ 1 (* 4 (+ (* (- (1- height) i) width) j)))) str)
+      (write-byte (aref image-data (+ 2 (* 4 (+ (* (- (1- height) i) width) j)))) str)))))))
 
 (defun run ()
  (loop for str = (progn (format t "> ") (force-output) (read-line))

@@ -30,10 +30,11 @@ workspace.openFromSource(url2String("file:resources/empty.nlogo"))
 
 val commands = io.Source.stdin.getLines.mkString("\n")
 
+workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands("resize-world -5 5 -5 5", api.AgentKind.Observer))
+
 workspace.mainRNG.setSeed(15)
 workspace.runCompiledCommands(new api.SimpleJobOwner("test", workspace.world.mainRNG, api.AgentKind.Observer), workspace.compileCommands(commands, api.AgentKind.Observer))
 
-workspace.world.exportWorld(new java.io.PrintWriter(System.out, true), true)
-System.out.println(org.nlogo.headless.Checksummer.calculateChecksum(workspace.world.exportWorld(_, true)))
+workspace.exportView("scala.png", "PNG")
 
 workspace.dispose

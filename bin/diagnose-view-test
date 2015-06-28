@@ -1,0 +1,54 @@
+#!/bin/bash
+
+if ! [ -n "$1" ] ; then
+  echo "Uhm, need a test name, yo"
+  exit 1
+fi
+TEST=$@
+
+sbcl --eval "(asdf:load-system :clnl-test)" --eval "(quit)" &> /dev/null
+
+runtestfn() {
+  sbcl \
+    --noinform --disable-ldb --lose-on-corruption --end-runtime-options \
+    --eval "(asdf:load-system :clnl-test)" \
+    --eval "(clnl-test::$1 \"$TEST\")" \
+    --eval "(quit)" 2> /dev/null | sed -n '/^----$/,$p' | tail -n +2
+}
+
+scalaprog=bin/viewruncmd.scala
+
+scalafile=$(mktemp -u -p . --suffix .scala.png)
+clfile=$(mktemp -u -p . --suffix .cl.ppm)
+
+runtestfn "test-scala-input" | $scalaprog | sed -n '/^----$/,$p' | tail -n +2
+mv scala.png $scalafile
+checksum=$(runtestfn "test-debug")
+mv cl.ppm $clfile
+
+echo
+echo "If the images are equal, use $checksum for CL checksum (note that you may get a different checksum on travis, see as of yet unwritten documentation for details)"
+echo "The compare result is (Less than 1500 is probably equivalent):"
+compare -metric RMSE $clfile $scalafile NULL:
+echo
+echo
+echo "Here are the results of identify (make sure they are the same size):"
+identify $clfile
+identify $scalafile
+echo "Make sure that turtles are on top of each other correctly and all correct colors."
+echo -n "Hit enter to view them ..."
+read
+
+display $scalafile &
+scalafiledisplaypid=$!
+display $clfile &
+clfiledisplaypid=$!
+
+echo -n "... and hit enter to finish"
+read
+
+kill $scalafiledisplaypid
+kill $clfiledisplaypid
+
+rm $scalafile
+rm $clfile

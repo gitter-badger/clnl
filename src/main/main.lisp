@@ -14,12 +14,12 @@
 (defun run ()
  (loop for str = (progn (format t "> ") (force-output) (read-line))
        while str
-       do (p (e (r str)))))
+       do (p (e (r str))))
+ (sb-ext:exit))
 
 (defun boot ()
  (clnl-random:set-seed 15)
- (clnl-nvm:create-world)
- )
+ (clnl-nvm:create-world))
 
 (defun run-commands (cmds)
  (eval (clnl-transpiler:transpile-commands (clnl-parser:parse  (clnl-lexer:lex cmds)))))

@@ -23,14 +23,12 @@
   #:forward
   #:random-float
   #:show
-  #:turtles
-
-  ))
+  #:turtles))
 
 (defpackage #:clnl-lexer
  (:use :common-lisp)
  (:export :lex))
 
 (defpackage #:clnl-interface
- (:use :common-lisp))
-
+ (:use :common-lisp)
+ (:export :run :export-view))

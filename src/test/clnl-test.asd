@@ -2,7 +2,8 @@
 (asdf:defsystem clnl-test.internal
   :components ((:file "package")
                (:file "main")
-               (:file "simpletests")))
+               (:file "simpletests")
+               (:file "viewtests")))
 
 (asdf:defsystem clnl-test
   :name "Experiment Tests"
@@ -10,7 +11,4 @@
   :maintainer "Frank Duncan (frank@kank.com)"
   :author "Frank Duncan (frank@kank.com)"
   :serial t
-  :components ((:file "package")
-               (:file "main")
-               (:file "simpletests"))
   :depends-on (:ironclad :clnl clnl-test.internal))
