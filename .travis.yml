@@ -1,6 +1,2 @@
-before_install:
-  - bin/setuptravis.sh
-  - export PATH="$PATH:$HOME/sbcl/bin"
-  - export SBCL_HOME="$HOME/sbcl/lib/sbcl/"
 script:
-  - sbcl --script bin/test.lisp
+  - deps/travissbcl --script bin/travis.lisp

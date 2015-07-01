@@ -19,7 +19,7 @@
   final-result))
 
 (defun run-all-tests ()
- (format t "~%Here we goooooooo~%")
+ (format t "~%~c[1;33mHere we goooooooo~c[0m~%" #\Esc #\Esc)
  (run-tests (reverse *tests*)))
   
 (defun run-tests-matching (match)

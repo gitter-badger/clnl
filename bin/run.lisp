@@ -1,4 +1,5 @@
+(setf *compile-print* nil)
 (require 'asdf)
-(setf asdf:*central-registry* (list #p"deps/"))
+(push #p"deps/" asdf:*central-registry*)
 (asdf:load-system :clnl)
 (clnl:run)

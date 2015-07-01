@@ -1,3 +1,9 @@
+; For why this is the way it is, see src/main/clnl.asd
+(asdf:defsystem clnl-test.internal
+  :components ((:file "package")
+               (:file "main")
+               (:file "simpletests")))
+
 (asdf:defsystem clnl-test
   :name "Experiment Tests"
   :version "0.0.1"
@@ -7,4 +13,4 @@
   :components ((:file "package")
                (:file "main")
                (:file "simpletests"))
-  :depends-on (:clnl :ironclad))
+  :depends-on (:ironclad :clnl clnl-test.internal))

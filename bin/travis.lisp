@@ -1,5 +1,6 @@
 (setf *compile-print* nil)
 (require 'asdf)
 (setf asdf:*central-registry* (list #p"deps/"))
-(asdf:load-system :clnl-test)
+(asdf:load-system :clnl.internal)
+(asdf:load-system :clnl-test.internal)
 (sb-ext:quit :unix-status (if (clnl-test:run-all-tests) 0 1))
