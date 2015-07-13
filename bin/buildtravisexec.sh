@@ -20,12 +20,13 @@ mkdir -p tmp/deps/
   tar zxf ../../deps/tarpit/mt19937-latest.tar.gz &&
   tar zxf ../../deps/tarpit/nibbles-v0.12.tar.gz &&
   tar zxf ../../deps/tarpit/trivial-features_0.8.tar.gz &&
+  tar zxf ../../deps/tarpit/style-checker_0.1.tar.gz &&
   ln -s cl-ppcre-2.0.10/cl-ppcre.asd . &&
   ln -s ironclad_0.33.0/ironclad.asd . &&
   ln -s mt19937-1.1.1/mt19937.asd . &&
   ln -s nibbles-0.12/nibbles.asd . &&
   ln -s 3b-cl-opengl-993d627/cl-glut.asd . &&
-  ln -s frank/.sbcl/site/3b-cl-opengl-993d627/cl-opengl.asd . &&
+  ln -s 3b-cl-opengl-993d627/cl-opengl.asd . &&
   ln -s alexandria-b1c6ee0/alexandria.asd . &&
   ln -s babel_0.5.0/babel-streams.asd . &&
   ln -s babel_0.5.0/babel.asd . &&
@@ -34,7 +35,8 @@ mkdir -p tmp/deps/
   ln -s cffi_0.15.0/cffi-libffi.asd . &&
   ln -s cffi_0.15.0/cffi-grovel.asd . &&
   ln -s cffi_0.15.0/cffi-uffi-compat.asd . &&
-  ln -s trivial-features_0.8/trivial-features.asd .
+  ln -s trivial-features_0.8/trivial-features.asd . &&
+  ln -s style-checker_0.1/style-checker.asd .
 )
 
 
@@ -46,9 +48,10 @@ SBCL_HOME="" tmp/sbcl/bin/sbcl --core tmp/sbcl/lib/sbcl/sbcl.core \
   --eval "(asdf:load-system :ironclad)" \
   --eval "(asdf:load-system :cl-opengl)" \
   --eval "(asdf:load-system :cl-glut)" \
+  --eval "(asdf:load-system :style-checker)" \
   --eval "(asdf:clear-output-translations)" \
   --eval '(sb-ext:save-lisp-and-die "deps/travissbcl" :executable t)' \
 
 chmod +x deps/travissbcl
 
-rm -rf tmp
+# rm -rf tmp

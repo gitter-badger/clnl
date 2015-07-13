@@ -21,28 +21,30 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#show"
   (nconc
    *turtles*
    (list
-    (make-turtle :who *current-id*
-                 :color (coerce (+ 5 (* 10 (clnl-random:next-int 14))) 'double-float)
-                 :heading (coerce (clnl-random:next-int 360) 'double-float)
-                 :xcor 0d0
-                 :ycor 0d0))))
+    (make-turtle
+     :who *current-id*
+     :color (coerce (+ 5 (* 10 (clnl-random:next-int 14))) 'double-float)
+     :heading (coerce (clnl-random:next-int 360) 'double-float)
+     :xcor 0d0
+     :ycor 0d0))))
  (incf *current-id*))
 
 (defun turtles ()
-"Reports the agentset consisting of all turtles. 
+ "Reports the agentset consisting of all turtles. 
 
 See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#turtles"
  *turtles*)
 
 (defun ask (agent-set fn)
-"The specified agent or agentset runs the given commands.
+ "The specified agent or agentset runs the given commands.
 
 See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#ask"
  (let
   ((iter (shufflerator agent-set)))
-  (loop for agent = (funcall iter)
-        while agent
-        do (let ((*myself* *self*) (*self* agent)) (funcall fn)))))
+  (loop
+   :for agent := (funcall iter)
+   :while agent
+   :do (let ((*myself* *self*) (*self* agent)) (funcall fn)))))
 
 (defun shufflerator (agent-set)
  (let
@@ -64,9 +66,11 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#ask"
      (t (let ((result agent)) (fetch) result)))))))
 
 (defun random-float (n)
-"If number is positive, returns a random floating point number greater than or equal to 0 but strictly less than number.
+ "If number is positive, returns a random floating point number greater than
+or equal to 0 but strictly less than number.
 
-If number is negative, returns a random floating point number less than or equal to 0, but strictly greater than number.
+If number is negative, returns a random floating point number less than or equal
+to 0, but strictly greater than number.
 
 If number is zero, the result is always 0. 
 
@@ -74,7 +78,8 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#random-float"
  (clnl-random:next-double n))
 
 (defun forward (n)
-"The turtle moves forward by number steps, one step at a time. (If number is negative, the turtle moves backward.) 
+ "The turtle moves forward by number steps, one step at a time. (If number is
+negative, the turtle moves backward.) 
 
 See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#forward"
  (when (not (turtle-p *self*)) (error "Gotta call fd in turtle scope, dude (~A)" *self*))
@@ -82,13 +87,13 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#forward"
  (setf (turtle-ycor *self*) (+ (turtle-ycor *self*) (* n (cos (* pi (/ (turtle-heading *self*) 180)))))))
 
 (defun create-turtles (n)
-"Creates number new turtles at the origin. New turtles have random integer
+ "Creates number new turtles at the origin. New turtles have random integer
 headings and the color is randomly selected from the 14 primary colors.
 
 If commands are supplied, the new turtles immediately run them.
 
 See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#create-turtles"
- (loop for i from 1 to n do (create-turtle)))
+ (loop :for i :from 1 :to n :do (create-turtle)))
 
 (defun create-world ()
  (setf *turtles* nil)
@@ -96,13 +101,16 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#create-turtles"
 
 ; These match netlogo's dump
 (defgeneric dump-object (o))
+
 (defmethod dump-object ((n double-float))
  (multiple-value-bind (int rem) (floor n)
   (if (eql 0d0 rem)
-      (format nil "~A" int)
-      (let
-       ((output (format nil "~D" n)))
-       (cl-ppcre:regex-replace "d-" (cl-ppcre:regex-replace "d0" output "") "E-"))))) ; Someday we'll have d<posint>, but this is not that day!
+   (format nil "~A" int)
+   (let
+    ((output (format nil "~D" n)))
+    ; Someday we'll have d<posint>, but this is not that day!
+    (cl-ppcre:regex-replace "d-" (cl-ppcre:regex-replace "d0" output "") "E-")))))
+
 (defmethod dump-object ((o string)) o)
 
 (defun export-world ()
@@ -112,22 +120,26 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#create-turtles"
    (format nil "~S" (clnl-random:export))
    ""
    (format nil "~S" "GLOBALS")
-   "\"min-pxcor\",\"max-pxcor\",\"min-pycor\",\"max-pycor\",\"perspective\",\"subject\",\"nextIndex\",\"directed-links\",\"ticks\","
+   (format nil "~A~A"
+    "\"min-pxcor\",\"max-pxcor\",\"min-pycor\",\"max-pycor\",\"perspective\",\"subject\","
+    "\"nextIndex\",\"directed-links\",\"ticks\",")
    (format nil "\"-1\",\"1\",\"-1\",\"1\",\"0\",\"nobody\",\"~A\",\"\"\"NEITHER\"\"\",\"-1\"" *current-id*)
    ""
    (format nil "~S" "TURTLES")
-   "\"who\",\"color\",\"heading\",\"xcor\",\"ycor\",\"shape\",\"label\",\"label-color\",\"breed\",\"hidden?\",\"size\",\"pen-size\",\"pen-mode\""
+   (format nil "~A~A"
+    "\"who\",\"color\",\"heading\",\"xcor\",\"ycor\",\"shape\",\"label\",\"label-color\","
+    "\"breed\",\"hidden?\",\"size\",\"pen-size\",\"pen-mode\"")
    (format nil "~{~A~%~}"
     (mapcar
      (lambda (turtle)
       (format nil
-       "\"~A\",\"~A\",\"~A\",\"~A\",\"~A\",\"\"\"default\"\"\",\"\"\"\"\"\",\"9.9\",\"{all-turtles}\",\"false\",\"1\",\"1\",\"\"\"up\"\"\""
+       "\"~A\",\"~A\",\"~A\",\"~A\",\"~A\",~A"
        (turtle-who turtle)
        (dump-object (turtle-color turtle))
        (dump-object (turtle-heading turtle))
        (dump-object (turtle-xcor turtle))
        (dump-object (turtle-ycor turtle))
-       ))
+       "\"\"\"default\"\"\",\"\"\"\"\"\",\"9.9\",\"{all-turtles}\",\"false\",\"1\",\"1\",\"\"\"up\"\"\""))
      *turtles*))
    (format nil "~S" "PATCHES")
    "\"pxcor\",\"pycor\",\"pcolor\",\"plabel\",\"plabel-color\""
@@ -143,5 +155,4 @@ See http://ccl.northwestern.edu/netlogo/docs/dictionary.html#create-turtles"
    ""
    (format nil "~S" "LINKS")
    "\"end1\",\"end2\",\"color\",\"label\",\"label-color\",\"hidden?\",\"breed\",\"thickness\",\"shape\",\"tie-mode\""
-   ""
-   )))
+   "")))

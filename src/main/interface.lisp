@@ -4,7 +4,6 @@
 (defvar *world-dims* '(:xmin -5 :xmax 5 :ymin -5 :ymax 5))
 
 (defvar *turtle-list* nil)
-(car clnl-nvm::*turtles*)
 
 ; It may be useful to keep windows around
 (defvar *glut-window-opened* nil)
@@ -44,13 +43,13 @@
  (mapcar
   (lambda (turtle)
    (let
-    ((color (nl-color->rgb (clnl-nvm::turtle-color turtle))))
+    ((color (nl-color->rgb (clnl-nvm:turtle-color turtle))))
     (gl:color (car color) (cadr color) (caddr color)))
    (gl:with-pushed-matrix
-    (gl:translate (* (clnl-nvm::turtle-xcor turtle) *patch-size*) (* (clnl-nvm::turtle-ycor turtle) *patch-size*) 0)
-    (gl:rotate (clnl-nvm::turtle-heading turtle) 0 0 -1)
+    (gl:translate (* (clnl-nvm:turtle-xcor turtle) *patch-size*) (* (clnl-nvm:turtle-ycor turtle) *patch-size*) 0)
+    (gl:rotate (clnl-nvm:turtle-heading turtle) 0 0 -1)
     (gl:call-list *turtle-list*)))
-  clnl-nvm::*turtles*)
+  (clnl-nvm:turtles))
  (gl:flush))
 
 (defun display ()
@@ -117,11 +116,10 @@
   (let
    ((fbo (first (gl:gen-framebuffers 1)))
     (render-buf (first (gl:gen-renderbuffers 1)))
-    (width 143)  ; Hard coded for now, yay v1 (if you see this comment in a year, please cry for me)
-    (height 143)
    ;(width (floor (* *patch-size* (1+ (- (getf *world-dims* :xmax) (getf *world-dims* :xmin))))))
    ;(height (floor (* *patch-size* (1+ (- (getf *world-dims* :ymax) (getf *world-dims* :ymin))))))
-    )
+    (width 143)  ; Hard coded for now, yay v1 (if you see this comment in a year, please cry for me)
+    (height 143))
    (gl:bind-framebuffer :framebuffer fbo)
    (gl:bind-renderbuffer :renderbuffer render-buf)
    (gl:renderbuffer-storage :renderbuffer :rgba8 width height)

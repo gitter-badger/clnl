@@ -45,7 +45,7 @@
       (prim-name prim)
       (mapcar
        #'help-arg
-       (prim-args prim) 
+       (prim-args prim)
        (butlast parsed-remainder (- (length parsed-remainder) num-args))))
      (nthcdr num-args parsed-remainder))))
   (t (error "Couldn't parse ~S" lexed-ast))))
@@ -54,8 +54,8 @@
  (case arg-type
   (:command-block
    (if (not (and (consp arg) (eql 'block (car arg))))
-       (error "Required a block, but found a ~A" arg)
-       (cons :command-block (cdr arg))))
+    (error "Required a block, but found a ~A" arg)
+    (cons :command-block (cdr arg))))
   (t arg)))
 
 (defun parse-block (tokens)

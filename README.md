@@ -18,6 +18,7 @@ If you'd like to build it, you're going to need a few things:
   * mt19937
   * nibbles
   * trivial-features
+  * style-checker
 * rlwrap
 
 # Running

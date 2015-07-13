@@ -13,17 +13,18 @@
 (defun run-tests (tests)
  (let
   ((final-result t))
-  (loop for test in tests
-        for result = (run-and-print-test test)
-        do (setf final-result (and final-result result)))
+  (loop
+   :for test :in tests
+   :for result := (run-and-print-test test)
+   :do (setf final-result (and final-result result)))
   final-result))
 
 (defun run-all-tests ()
- (format t "~%~c[1;33mHere we goooooooo~c[0m~%" #\Esc #\Esc)
  (run-tests (reverse *tests*)))
-  
+
 (defun run-tests-matching (match)
- (run-tests (remove-if-not (lambda (test-name) (cl-ppcre:scan (format nil "^~A$" match) test-name)) *tests* :key #'car)))
+ (run-tests
+  (remove-if-not (lambda (test-name) (cl-ppcre:scan (format nil "^~A$" match) test-name)) *tests* :key #'car)))
 
 (defun find-test (name)
  (or
@@ -43,8 +44,8 @@
 
 (defun checksum= (expected got)
  (if (stringp expected)
-     (string= got expected)
-     (find got expected :test #'string=)))
+  (string= got expected)
+  (find got expected :test #'string=)))
 
 ; To be used only with the simplest of tests, just a list of commands and a checksum of the
 ; world after they've been run.
@@ -115,7 +116,11 @@
 (defun save-view-to-ppm ()
  (let
   ((height 143) (width 143)) ; hardcoded in interface, hardcoded here, cry for me
-  (with-open-file (str "cl.ppm" :direction :output :if-exists :supersede :if-does-not-exist :create :element-type '(unsigned-byte 8))
+  (with-open-file (str "cl.ppm"
+                   :direction :output
+                   :if-exists :supersede
+                   :if-does-not-exist :create
+                   :element-type '(unsigned-byte 8))
    (write-sequence (map 'vector #'char-code (format nil "P6~%")) str)
    (write-sequence (map 'vector #'char-code (format nil "143 143~%")) str)
    (write-sequence (map 'vector #'char-code (format nil "255~%")) str)
@@ -128,6 +133,7 @@
       (write-byte (aref image-data (+ 2 (* 4 (+ (* (- (1- height) i) width) j)))) str)))))))
 
 (defun run ()
- (loop for str = (progn (format t "> ") (force-output) (read-line))
-       while str
-       do (progn (asdf:load-system :clnl-test) (run-tests-matching str))))
+ (loop
+  :for str := (progn (format t "> ") (force-output) (read-line))
+  :while str
+  :do (progn (asdf:load-system :clnl-test) (run-tests-matching str))))

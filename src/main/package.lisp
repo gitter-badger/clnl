@@ -16,7 +16,7 @@
 
 (defpackage #:clnl-nvm
  (:use :common-lisp)
- (:export :export-world :create-world :dump-object
+ (:export :export-world :create-world :dump-object :turtle-color :turtle-xcor :turtle-ycor :turtle-heading
   ; API as used by transpiled NetLogo programs
   #:ask
   #:create-turtles

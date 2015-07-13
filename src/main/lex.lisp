@@ -13,36 +13,37 @@
 (defmacro deflex (state match &optional func)
  (let
   ((scanner (gensym)))
- `(let
-   ((,scanner (when (stringp ,match) (cl-ppcre:create-scanner ,match))))
-   (pushnew
-    (list
-     (lambda (state text)
-      (and
-       (eql ,state state)
-       (or
-        (and (symbolp text) (eql text ,match))
-        (and ,scanner
-             (stringp text)
-             (multiple-value-bind (start end) (cl-ppcre:scan ,scanner text)
-              (and start end (= 0 start) (/= 0 end)))))))
-     (lambda (text) (second (multiple-value-list (cl-ppcre:scan ,scanner text))))
-     ,(or func #'as-symbol))
-    *lexes*))))
+  `(let
+    ((,scanner (when (stringp ,match) (cl-ppcre:create-scanner ,match))))
+    (pushnew
+     (list
+      (lambda (state text)
+       (and
+        (eql ,state state)
+        (or
+         (and (symbolp text) (eql text ,match))
+         (and
+          ,scanner
+          (stringp text)
+          (multiple-value-bind (start end) (cl-ppcre:scan ,scanner text)
+           (and start end (= 0 start) (/= 0 end)))))))
+      (lambda (text) (second (multiple-value-list (cl-ppcre:scan ,scanner text))))
+      ,(or func #'as-symbol))
+     *lexes*))))
 
 (defun lex (text)
  (if (string= "" text)
-     (let
-      ((lex (find-if (lambda (f) (funcall f *state* :eof)) *lexes* :from-end t :key #'car)))
-      (when lex (list (funcall (third lex) :eof))))
-     (let
-      ((lex (find-if (lambda (f) (funcall f *state* text)) *lexes* :from-end t :key #'car)))
-      (when (not lex) (error "Can't lex this: ~S" text))
-      (let
-       ((val (funcall (third lex) (subseq text 0 (funcall (cadr lex) text)))))
-       (if val
-          (cons val (lex (subseq text (funcall (cadr lex) text))))
-          (lex (subseq text (funcall (cadr lex) text))))))))
+  (let
+   ((lex (find-if (lambda (f) (funcall f *state* :eof)) *lexes* :from-end t :key #'car)))
+   (when lex (list (funcall (third lex) :eof))))
+  (let
+   ((lex (find-if (lambda (f) (funcall f *state* text)) *lexes* :from-end t :key #'car)))
+   (when (not lex) (error "Can't lex this: ~S" text))
+   (let
+    ((val (funcall (third lex) (subseq text 0 (funcall (cadr lex) text)))))
+    (if val
+     (cons val (lex (subseq text (funcall (cadr lex) text))))
+     (lex (subseq text (funcall (cadr lex) text))))))))
 
 (defun set-state (new-state)
  (setf *state* new-state))
