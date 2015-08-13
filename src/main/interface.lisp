@@ -43,13 +43,13 @@
  (mapcar
   (lambda (turtle)
    (let
-    ((color (nl-color->rgb (clnl-nvm:turtle-color turtle))))
+    ((color (nl-color->rgb (getf turtle :color))))
     (gl:color (car color) (cadr color) (caddr color)))
    (gl:with-pushed-matrix
-    (gl:translate (* (clnl-nvm:turtle-xcor turtle) *patch-size*) (* (clnl-nvm:turtle-ycor turtle) *patch-size*) 0)
-    (gl:rotate (clnl-nvm:turtle-heading turtle) 0 0 -1)
+    (gl:translate (* (getf turtle :xcor) *patch-size*) (* (getf turtle :ycor) *patch-size*) 0)
+    (gl:rotate (getf turtle :heading) 0 0 -1)
     (gl:call-list *turtle-list*)))
-  (clnl-nvm:turtles))
+  (clnl-nvm:current-state))
  (gl:flush))
 
 (defun display ()
@@ -85,6 +85,18 @@
   (gl:end)))
 
 (defun run ()
+ "RUN => RESULT
+
+ARGUMENTS AND VALUES:
+
+  RESULT: undefined, should never get here
+
+DESCRIPTION:
+
+  RUN runs the view in an external window.
+
+  This should be run inside another thread as it starts the glut main-loop.
+  Closing this window will then cause the entire program to terminate."
  ; I do this because I don't know who or what in the many layers
  ; is causing the floating point errors, but I definitely don't
  ; want to investigate until simply ignoring them becomes a problem.
@@ -105,6 +117,22 @@
   (cl-glut:main-loop)))
 
 (defun export-view ()
+ "EXPORT-VIEW => IMAGE-DATA
+
+ARGUMENTS AND VALUES:
+
+  IMAGE-DATA: A vector, pixel data as returned by opengls readPixels
+
+DESCRIPTION:
+
+  EXPORT-VIEW returns the current view in raw data of RGBA pixels.
+
+  Each pixel is made up of 4 bytes of data, which an be walked over.  The number
+  of pixels is the current width x height.  Converting to some other image format
+  is a matter of pulling that information out and putting it into whatever format
+  you like.
+
+  This requires opengl to run, but can be used with xvfb in a headless mode."
  (sb-int:with-float-traps-masked (:invalid)
   (when (not *glut-window-opened*)
    (cl-glut:init)

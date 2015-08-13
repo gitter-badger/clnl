@@ -71,12 +71,12 @@
    (lambda ()
     (clnl:boot)
     (and
-     (string= (clnl-nvm:dump-object (clnl:run-reporter ,reporter)) ,value)
+     (string= (funcall (intern "DUMP-OBJECT" :clnl-nvm) (clnl:run-reporter ,reporter)) ,value)
      (checksum= ,checksum (checksum-world))))
    (lambda ()
     (clnl:boot)
     (format nil "~A~%~A~A"
-     (clnl-nvm:dump-object (clnl:run-reporter ,reporter))
+     (funcall (intern "DUMP-OBJECT" :clnl-nvm) (clnl:run-reporter ,reporter))
      (clnl-nvm:export-world)
      (checksum-world)))
    "bin/runreporter.scala"

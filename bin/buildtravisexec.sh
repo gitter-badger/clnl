@@ -21,6 +21,7 @@ mkdir -p tmp/deps/
   tar zxf ../../deps/tarpit/nibbles-v0.12.tar.gz &&
   tar zxf ../../deps/tarpit/trivial-features_0.8.tar.gz &&
   tar zxf ../../deps/tarpit/style-checker_0.1.tar.gz &&
+  tar zxf ../../deps/tarpit/docgen_0.1.tar.gz &&
   ln -s cl-ppcre-2.0.10/cl-ppcre.asd . &&
   ln -s ironclad_0.33.0/ironclad.asd . &&
   ln -s mt19937-1.1.1/mt19937.asd . &&
@@ -36,7 +37,8 @@ mkdir -p tmp/deps/
   ln -s cffi_0.15.0/cffi-grovel.asd . &&
   ln -s cffi_0.15.0/cffi-uffi-compat.asd . &&
   ln -s trivial-features_0.8/trivial-features.asd . &&
-  ln -s style-checker_0.1/style-checker.asd .
+  ln -s style-checker_0.1/style-checker.asd . &&
+  ln -s docgen_0.1/docgenasd .
 )
 
 
@@ -49,9 +51,15 @@ SBCL_HOME="" tmp/sbcl/bin/sbcl --core tmp/sbcl/lib/sbcl/sbcl.core \
   --eval "(asdf:load-system :cl-opengl)" \
   --eval "(asdf:load-system :cl-glut)" \
   --eval "(asdf:load-system :style-checker)" \
+  --eval "(asdf:load-system :docgen)" \
   --eval "(asdf:clear-output-translations)" \
-  --eval '(sb-ext:save-lisp-and-die "deps/travissbcl" :executable t)' \
+  --eval '(sb-ext:save-lisp-and-die "travissbcl" :executable t)' \
 
-chmod +x deps/travissbcl
+chmod +x travissbcl
+travisname=travissbcl-$(git rev-parse --short HEAD)
+mv travissbcl $travisname
 
-# rm -rf tmp
+echo "You should upload via the command: scp $travisname nami:/opt/travis/sbcls/clnl/"
+echo "You should also set travisname in .travis.yml to $travisname"
+
+rm -rf tmp

@@ -32,6 +32,20 @@
      *lexes*))))
 
 (defun lex (text)
+ "LEX TEXT => AST
+
+ARGUMENTS AND VALUES:
+
+  TEXT: Some NetLogo code
+  AST: An ambigious AST that can later be parsed
+
+DESCRIPTION:
+
+  LEX lexes NetLogo code.
+
+  LEX checks for some things, in as much as it can without knowing anything
+  about some of the backgrounds of NetLogo.  However, it does the first pass
+  with as much as it can."
  (if (string= "" text)
   (let
    ((lex (find-if (lambda (f) (funcall f *state* :eof)) *lexes* :from-end t :key #'car)))

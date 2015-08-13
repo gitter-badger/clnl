@@ -19,6 +19,7 @@ If you'd like to build it, you're going to need a few things:
   * nibbles
   * trivial-features
   * style-checker
+  * docgen
 * rlwrap
 
 # Running

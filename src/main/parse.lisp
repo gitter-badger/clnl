@@ -31,6 +31,26 @@
 ; Make this only as complicated as it needs to be, letting it grow
 ; as we take on more and more of the language
 (defun parse (lexed-ast)
+ "PARSE LEXED-AST => AST
+
+ARGUMENTS AND VALUES:
+
+  LEXED-AST: An ambigious ast
+  AST: An unambigious ast that can be transpiled
+
+DESCRIPTION:
+
+  PARSE takes a ambigious LEXED-AST and converts it to an unambigious one.
+
+  The need for a parser between the lexer and the transpiler is because NetLogo
+  needs two passes to turn into something that can be used.  This is the only entry
+  point into this module, and should probably remain that way.
+
+  There's also a lot of error checking that the LEXED-AST even makes sense, even
+  though the lexer obviously thought it did.
+
+  Examples are too numerous and varied, but by inserting an output between
+  the lexer and this code, a good idea of what goes on can be gotten."
  (cond
   ((not lexed-ast) nil)
   ((numberp (car lexed-ast)) (cons (coerce (car lexed-ast) 'double-float) (parse (cdr lexed-ast))))

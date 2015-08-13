@@ -1,20 +1,54 @@
 (in-package #:clnl-random)
 
-; This is a wrapper around the very nice mersenne twister mt19937 to match
-; NetLogo's implementation that tries to match how java.util.Random works
-
 (defun set-seed (n)
+ "SET-SEED => RESULT
+
+ARGUMENTS AND VALUES:
+
+  RESULT: undefined
+
+DESCRIPTION:
+
+  SET-SEED sets the seed on the RNG."
  (setf mt19937:*random-state* (funcall
                                (symbol-function (intern "MAKE-RANDOM-OBJECT" :mt19937))
                                :state (mt19937:init-random-state n))))
 
 (defun next-int (n)
+ "NEXT-INT N => INT
+
+ARGUMENTS AND VALUES:
+
+  N: An integer representing the upper bound
+  INT: An integer
+
+DESCRIPTION:
+
+  NEXT-INTEGER returns the next randomly generated integer.
+
+  It does so in a way that's in accordance with java.util.Random and
+  the MerseinneTwisterFast that's in NetLogo.  It also advances the
+  RNG and is bounded by N."
  (if
   (= n (logand n (- n) ))
   (ash (* n (ash (mt19937:random-chunk mt19937:*random-state*) -1) ) -31)
   (rem (ash (mt19937:random-chunk mt19937:*random-state*) -1) n)))
 
 (defun next-double (&optional (n 1d0))
+ "NEXT-DOUBLE &optional N => DOUBLE
+
+ARGUMENTS AND VALUES:
+
+  N: A double representing the upper bound
+  DOUBLE: A double
+
+DESCRIPTION:
+
+  NEXT-DOUBLE returns the next randomly generated double.
+
+  It does so in a way that's in accordance with java.util.Random and
+  the MerseinneTwisterFast that's in NetLogo.  It also advances the
+  RNG and is bounded by N."
  (let
   ((y (mt19937:random-chunk mt19937:*random-state*))
    (z (mt19937:random-chunk mt19937:*random-state*)))
@@ -26,6 +60,21 @@
 
 ; Oh, export world, you WILL be mine
 (defun export ()
+ "EXPORT => RANDOM-STATE
+
+ARGUMENTS AND VALUES:
+
+  RANDOM-STATE: A dump of the current random state
+
+DESCRIPTION:
+
+  EXPORT dumps out the random state to be export world ready.
+
+  When NetLogo dumps out the current state of the engine, the state of the
+  RNG also gets dumped out so that it can be reinitialized later.  This
+  accomplishes that.
+
+  This isn't really useful for regular use."
  (let
   ((state
     (map
