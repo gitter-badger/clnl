@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# This script builds a verion of sbcl with the libraries pre loaded
+# for ease of travis.  Remember to update bin/buildosxsbcl when you
+# update this.
+
 mkdir -p tmp/sbcl
 
 cwd=$PWD
@@ -42,7 +46,6 @@ mkdir -p tmp/deps/
   ln -s style-checker_0.1/style-checker.asd . &&
   ln -s docgen_0.1/docgen.asd .
 )
-
 
 SBCL_HOME="" tmp/sbcl/bin/sbcl --core tmp/sbcl/lib/sbcl/sbcl.core \
   --eval "(require 'asdf)" \

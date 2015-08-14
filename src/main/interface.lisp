@@ -102,13 +102,13 @@ DESCRIPTION:
  ; want to investigate until simply ignoring them becomes a problem.
  (sb-int:with-float-traps-masked (:invalid)
   (cl-glut:init)
-  (gl:clear-color 0 0 0 1)
   (cl-glut:init-window-size
    (floor (* *patch-size* (1+ (- (getf *world-dims* :xmax) (getf *world-dims* :xmin)))))
    (floor (* *patch-size* (1+ (- (getf *world-dims* :ymax) (getf *world-dims* :ymin))))))
-  (setf *glut-window-opened* t)
-  (cl-glut:create-window "CLNL Test Window")
   (cl-glut:init-display-mode :double :rgba)
+  (cl-glut:create-window "CLNL Test Window")
+  (setf *glut-window-opened* t)
+  (gl:clear-color 0 0 0 1)
   (cl-glut:display-func (cffi:get-callback 'display))
   (glut:reshape-func (cffi:callback reshape))
   (cl-glut:idle-func (cffi:get-callback 'idle))
@@ -136,9 +136,9 @@ DESCRIPTION:
  (sb-int:with-float-traps-masked (:invalid)
   (when (not *glut-window-opened*)
    (cl-glut:init)
-   (gl:clear-color 0 0 0 1)
    (cl-glut:init-window-size 1 1)
    (cl-glut:create-window "CLNL Test Window")
+   (gl:clear-color 0 0 0 1)
    (set-turtle-list)
    (setf *glut-window-opened* t))
   (let

@@ -23,12 +23,10 @@ ARGUMENTS AND VALUES:
 
 DESCRIPTION:
 
-  RUN implements a very simple REPL."
- (loop
-  :for str := (progn (format t "> ") (force-output) (read-line))
-  :while str
-  :do (p (e (r str))))
- (sb-ext:exit))
+  RUN starts up the CLNL system."
+
+ (sb-thread:make-thread #'clnl-cli:run)
+ (clnl-interface:run))
 
 (defun boot ()
  "BOOT => RESULT

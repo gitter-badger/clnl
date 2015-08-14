@@ -44,13 +44,9 @@ If you'd like to run using your own sbcl instance, you can attach the clnl.asd f
 (clnl:run)
 ```
 
-To view the opengl view, you'll want to open up the interface:
+## Running on OSX
 
-```lisp
-(sb-thread:make-thread #'clnl-interface:run)
-```
-
-(On OSX, the interface should be the main thread)
+In order to run on OSX, you may have to build your own sbcl instance with threads enabled.
 
 # Testing
 
