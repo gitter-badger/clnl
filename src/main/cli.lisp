@@ -74,25 +74,31 @@ DESCRIPTION:
  (refresh-cli))
 
 (defun setup-info (num-tall num-wide)
- (setf *info* (newwin 20 60 (floor (- num-tall 20) 2) (floor (- num-wide 60) 2)))
- (mvwprintw *info* 1 1
-  (format nil
-   "
-           .
-          / \\
-         /   \\     Welcome to CLNL version ~A!
-        /     \\
-       /_______\\
-
-     CLNL is an experiment at creating an alternate
-     implementation of NetLogo.
-
-     You can enter in various netlogo commands below,
-     or use q to quit the program.
-
-     See http://github.com/frankduncan/clnl for more
-     information about CLNL and to keep apprised of
-     any updates that may happen."
-   (asdf:component-version (asdf:find-system :clnl))))
- (box *info* 0 0)
- (wrefresh *info*))
+ (let*
+  ((info "
+       / \\
+      /   \\     Welcome to CLNL version ~A!
+     /     \\
+    /_______\\
+  
+  CLNL is an experiment at creating an alternate
+  implementation of NetLogo.
+  
+  You can enter in various netlogo commands below,
+  or use q to quit the program.
+  
+  See http://github.com/frankduncan/clnl for more
+  information about CLNL and to keep apprised of
+  any updates that may happen.")
+   (info-height (length (cl-ppcre:split "\\n" info)))
+   (info-width (apply #'max (mapcar #'length (cl-ppcre:split "\\n" info)))))
+  (setf *info* (newwin
+                (+ 3 info-height)
+                (+ 2 info-width)
+                (max 0 (floor (- num-tall info-height) 2))
+                (max 0 (floor (- num-wide info-width) 2))))
+  (mvwprintw *info* 1 0
+   (format nil info
+    (asdf:component-version (asdf:find-system :clnl))))
+  (box *info* 0 0)
+  (wrefresh *info*)))

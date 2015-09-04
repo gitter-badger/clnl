@@ -7,18 +7,6 @@
 ;
 ; There's probably a better way, but I don't know it
 
-(asdf:defsystem clnl.internal
-  :serial t
-  :components ((:file "package")
-               (:file "lex")
-               (:file "parse")
-               (:file "nvm")
-               (:file "transpile")
-               (:file "random")
-               (:file "interface")
-               (:file "cli")
-               (:file "main")))
-
 (asdf:defsystem clnl
   :name "Experiment"
   :version "0.0.1"
